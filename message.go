@@ -5,7 +5,6 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/gogf/gf/v2/crypto/gmd5"
 	"github.com/gogf/gf/v2/util/guid"
-	"gitlab.landui.cn/gomod/global"
 	"gitlab.landui.cn/gomod/logs"
 	"sort"
 	"time"
@@ -23,10 +22,12 @@ func sorts(text string) string {
 	}
 	return newText
 }
-func SendSiteMessage(title, info, userId string) {
+
+// SendSiteMessage 发送站内信
+func (s *Site) SendSiteMessage(title, info, userId string) {
 	times := time.Now().Unix()
 	randStr := guid.S()
-	text := fmt.Sprintf("%d%s%s", times, randStr, global.Prepay)
+	text := fmt.Sprintf("%d%s%s", times, randStr, s.APISignSecret)
 	newText := sorts(text)
 	ciphertext := gmd5.MustEncryptString(newText)
 	data := map[string]string{
@@ -38,8 +39,9 @@ func SendSiteMessage(title, info, userId string) {
 		"userid":     userId,
 	}
 	client := resty.New()
-	logs.New().SetAdditionalInfo("url", global.ApiUrl["send_mail"]).SetAdditionalInfo("body", data).Info("发送站内信")
-	resp, err := client.R().SetBody(data).Post(global.ApiUrl["send_mail"])
+	url := s.APIUriPrefix + MessageAPI
+	logs.New().SetAdditionalInfo("url", url).SetAdditionalInfo("body", data).Info("发送站内信")
+	resp, err := client.R().SetBody(data).Post(url)
 	if err != nil {
 		fmt.Println("发送错误")
 	}
