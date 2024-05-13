@@ -24,7 +24,7 @@ func sorts(text string) string {
 }
 
 // SendSiteMessage 发送站内信
-func (s *Site) SendSiteMessage(title, info, userId string) (string, error) {
+func (s *Site) SendSiteMessage(title string, info string, userId uint) (string, error) {
 	times := time.Now().Unix()
 	randStr := guid.S()
 	text := fmt.Sprintf("%d%s%s", times, randStr, s.APISignSecret)
@@ -36,7 +36,7 @@ func (s *Site) SendSiteMessage(title, info, userId string) (string, error) {
 		"sign":       ciphertext,
 		"title":      title,
 		"info":       info,
-		"userid":     userId,
+		"userid":     fmt.Sprintf("%d", userId),
 	}
 	client := resty.New()
 	url := s.APIUriPrefix + MessageAPI
