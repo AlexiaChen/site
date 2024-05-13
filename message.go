@@ -2,12 +2,12 @@ package site
 
 import (
 	"fmt"
+	"sort"
+	"time"
+
 	"github.com/go-resty/resty/v2"
 	"github.com/gogf/gf/v2/crypto/gmd5"
 	"github.com/gogf/gf/v2/util/guid"
-	"gitlab.landui.cn/gomod/logs"
-	"sort"
-	"time"
 )
 
 func sorts(text string) string {
@@ -40,7 +40,6 @@ func (s *Site) SendSiteMessage(title, info, userId string) {
 	}
 	client := resty.New()
 	url := s.APIUriPrefix + MessageAPI
-	logs.New().SetAdditionalInfo("url", url).SetAdditionalInfo("body", data).Info("发送站内信")
 	resp, err := client.R().SetBody(data).Post(url)
 	if err != nil {
 		fmt.Println("发送错误")
