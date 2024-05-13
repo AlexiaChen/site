@@ -1,4 +1,4 @@
-module gitlab.landui.cn/gomod/site
+module github.com/AlexiaChen/site
 
 go 1.20
 
