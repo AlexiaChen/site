@@ -24,7 +24,7 @@ func sorts(text string) string {
 }
 
 // SendSiteMessage 发送站内信
-func (s *Site) SendSiteMessage(title, info, userId string) {
+func (s *Site) SendSiteMessage(title, info, userId string) (string, error) {
 	times := time.Now().Unix()
 	randStr := guid.S()
 	text := fmt.Sprintf("%d%s%s", times, randStr, s.APISignSecret)
@@ -42,7 +42,7 @@ func (s *Site) SendSiteMessage(title, info, userId string) {
 	url := s.APIUriPrefix + MessageAPI
 	resp, err := client.R().SetBody(data).Post(url)
 	if err != nil {
-		fmt.Println("发送错误")
+		return "", err
 	}
-	fmt.Println("发送站内信结果", resp.String())
+	return resp.String(), nil
 }
