@@ -1,9 +1,10 @@
 package site
 
 import (
+	"testing"
+
 	"gitlab.landui.cn/gomod/global"
 	"go.uber.org/zap"
-	"testing"
 )
 
 func TestSite_SendSiteMessage(t *testing.T) {
@@ -13,7 +14,7 @@ func TestSite_SendSiteMessage(t *testing.T) {
 		UserName:     "86326328",
 		APIUriPrefix: "https://www.st.landui.cn",
 	}
-	_ = site.SendSiteMessage("title", "msg", 14610)
+	_, _ = site.SendSiteMessage("title", "msg", 14610)
 }
 
 func initLog() {

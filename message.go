@@ -2,13 +2,19 @@ package site
 
 import (
 	"fmt"
-	"github.com/go-resty/resty/v2"
-	"gitlab.landui.cn/gomod/logs"
 	"strconv"
+	"strings"
+
+	"github.com/go-resty/resty/v2"
 )
 
 // SendSiteMessage 发送站内信
-func (s *Site) SendSiteMessage(title, info string, userId uint) error {
+func (s *Site) SendSiteMessage(title, info string, userId uint) (string, error) {
+
+	if userId == 0 || s.UserId == 0 || strings.TrimSpace(s.UserName) == "" {
+		return "", fmt.Errorf("发送站内信失败，参数错误: userid=%d & %d, username=%s", userId, s.UserId, s.UserName)
+	}
+
 	header := map[string]string{
 		"User-Agent":  "api-landui-lan",
 		"X-RequestAU": fmt.Sprintf("%d|\t|%s", s.UserId, s.UserName),
@@ -21,10 +27,10 @@ func (s *Site) SendSiteMessage(title, info string, userId uint) error {
 	client := resty.New()
 	url := s.APIUriPrefix + MessageAPI
 	resp, err := client.R().SetHeaders(header).SetBody(data).Post(url)
-	logs.New().
-		SetAdditionalInfo("url", url).
-		SetAdditionalInfo("body", data).
-		SetAdditionalInfo("response", resp).
-		Debug("发送站内信")
-	return err
+
+	if err != nil {
+		return "", fmt.Errorf("发送站内信失败: %s statue code %d  Response: %s  ", err.Error(), resp.StatusCode(), resp.String())
+	}
+
+	return resp.String(), nil
 }
